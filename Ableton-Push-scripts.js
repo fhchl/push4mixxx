@@ -1,3 +1,6 @@
+// debug incoming midi
+// amidi -p hw:3,0,1 -d
+
 var AbletonPush = {};
 
 /**
@@ -699,7 +702,19 @@ AbletonPush.commonControls = function() {
     });
 
     // Left knobs
-    //this.Knobs[0x0E] = ;
+    // Move up and down through library using encoder
+    this.Knobs[0x0E] = new components.Encoder({
+        midi: [0xB0, 0x0E],
+        group: '[Playlist]',
+        inKey: 'SelectTrackKnob',
+        input: function (channel, control, value, status, group) {
+            if (value === 0x01) {
+                this.inSetParameter(1);
+            } else if (value === 0x7F) {
+                this.inSetParameter(-1);
+            }
+        },
+    });
     this.Knobs[0x0F] = new components.Encoder({
         midi: [0xB0, 0x0F],
         group: "[Master]",
@@ -723,8 +738,19 @@ AbletonPush.commonControls = function() {
             AbletonPush.displayCursor({hbloc: 1, value: value, oc: 5});
         },
     });
-
-    //this.KnobsTouch[0x0A] = ;
+    // Touching library key maximizes library view
+    this.KnobsTouch[0x0A] = new components.Encoder({
+        midi: [0x90, 0x0A],
+        group: '[Master]',
+        key: 'maximize_library',
+        input: function (channel, control, value, status, group) {
+            if (value === 0) {
+                this.inSetParameter(0);
+            } else if (value === 0x7F) {
+                this.inSetParameter(1);
+            }
+        },
+    });
     this.KnobsTouch[0x09] = new components.Component({
         input: function(channel, control, value, _status, _group) {
             if (value === 0x7F) {
@@ -894,8 +920,20 @@ AbletonPush.commonControls = function() {
 
     //this.Buttons[0x2C] = ;
     //this.Buttons[0x2D] = ;
-    //this.Buttons[0x2E] = ;
-    //this.Buttons[0x2F] = ;
+    this.Buttons[0x2E] = new components.Button({
+        midi: [0xB0, 0x2E],
+        group: '[Library]',
+        key: 'MoveUp',
+        on: AbletonPush.Colors.mLight,
+        off: AbletonPush.Colors.mDim,
+    });
+    this.Buttons[0x2F] = new components.Button({
+        midi: [0xB0, 0x2F],
+        group: '[Library]',
+        key: 'MoveDown',
+        on: AbletonPush.Colors.mLight,
+        off: AbletonPush.Colors.mDim,
+    });
 
     this.PitchBend = new components.JogWheelBasic({
         deck: 1, // whatever deck this jogwheel controls
