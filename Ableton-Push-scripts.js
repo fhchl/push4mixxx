@@ -7,7 +7,7 @@ var AbletonPush = {};
  * Settings
  */
 AbletonPush.KnobSensitivity = 0.01; // Define the global encoders sensitivity to MIXXX knobs
-AbletonPush.Debug = true; // Bypass loading screen, disable vu-meter and show more logs
+AbletonPush.Debug = false; // Bypass loading screen, disable vu-meter and show more logs
 
 /**
  * Create controls list. For each control:
@@ -918,8 +918,23 @@ AbletonPush.commonControls = function() {
     });
     //this.Buttons[0x30] = ;
 
-    //this.Buttons[0x2C] = ;
-    //this.Buttons[0x2D] = ;
+    // FIXME: make it work for page 3-4 as well
+    //Load tracks to left deck with left D-pad
+    this.Buttons[0x2C] = new components.Button({
+        midi: [0xB0, 0x2C],
+        group: '[Channel1]',
+        key: 'LoadSelectedTrack',
+        on: AbletonPush.Colors.mLight,
+        off: AbletonPush.Colors.mDim,
+    });
+    //Load tracks to right deck with right D-pad
+    this.Buttons[0x2D] = new components.Button({
+        midi: [0xB0, 0x2D],
+        group: '[Channel2]',
+        key: 'LoadSelectedTrack',
+        on: AbletonPush.Colors.mLight,
+        off: AbletonPush.Colors.mDim,
+    });
     this.Buttons[0x2E] = new components.Button({
         midi: [0xB0, 0x2E],
         group: '[Library]',
