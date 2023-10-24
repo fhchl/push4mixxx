@@ -8,6 +8,8 @@ var AbletonPush = {};
  */
 AbletonPush.KnobSensitivity = 0.01; // Define the global encoders sensitivity to MIXXX knobs
 AbletonPush.Debug = true; // Bypass loading screen, disable vu-meter and show more logs
+AbletonPush.ShowCursors = true; // Turn off cursers so they don't clutter debug log
+AbletonPush.ShowText = true;  // Turn off texts so they don't clutter debug log
 
 /**
  * Create controls list. For each control:
@@ -1030,6 +1032,7 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
     this.ColorButtons = [];
     this.Knobs = [];
     this.KnobsTouch = [];
+    this.Effects = [];
 
     // Play, Cue, Sync on row 1
     this.RGBPads[0x24 + midiShift] = new components.PlayButton({
@@ -1118,17 +1121,6 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
         });
     }
 
-    // for (i = 5; i <= 8; i++) {
-    //     midiNum=0x27 + i + midiShift;
-    //     this.RGBPads[midiNum] = new components.HotcueButton({
-    //         midi: [0x90, midiNum],
-    //         number: i,
-    //         sendRGB: function(colorObj) {
-    //             AbletonPush.setRGBPadColor(this.midi[1], colorObj.red, colorObj.green, colorObj.blue);
-    //         }
-    //     });
-    // }
-
     // Loops on row 4
     this.RGBPads[0x3C + midiShift] = new components.LoopToggleButton({
         midi: [0x90, 0x3C + midiShift],
@@ -1200,12 +1192,6 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
             midi.sendShortMsg(0x90, 0x45 + midiShift, AbletonPush.Colors.rGreenDim);
         }
     });
-    // this.RGBPads[0x45 + midiShift] = new components.Button({
-    //     midi: [0x90, 0x45 + midiShift],
-    //     key: "beatjump_forward",
-    //     on: AbletonPush.Colors.rGreen,
-    //     off: AbletonPush.Colors.rGreenDim,
-    // });
     this.RGBPads[0x46 + midiShift] = new components.Button({
         midi: [0x90, 0x46 + midiShift],
         key: "loop_halve",
@@ -1220,7 +1206,47 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
     });
 
     // Effects on row 6
-    // TODO
+    var effectUnit = new components.EffectUnit(deckNumbers);
+    effectUnit.enableButtons[1].midi = [0x90, 0x4C + midiShift];
+    effectUnit.enableButtons[2].midi = [0x90, 0x4D + midiShift];
+    effectUnit.enableButtons[3].midi = [0x90, 0x4E + midiShift];
+    effectUnit.effectFocusButton.midi = [0x90, 0x4F + midiShift];
+    effectUnit.enableButtons[1].on = AbletonPush.Colors.rRed,
+    effectUnit.enableButtons[2].on = AbletonPush.Colors.rRed,
+    effectUnit.enableButtons[3].on = AbletonPush.Colors.rRed,
+
+    effectUnit.init();
+    this.Effects[midiShift] = effectUnit;
+
+    this.RGBPads[0x4C + midiShift] = this.Effects[midiShift].enableButtons[1];
+    this.RGBPads[0x4D + midiShift] = this.Effects[midiShift].enableButtons[2];
+    this.RGBPads[0x4E + midiShift] = this.Effects[midiShift].enableButtons[3];
+    this.RGBPads[0x4F + midiShift] = this.Effects[midiShift].effectFocusButton;
+
+    // this.RGBPads[0x4C + midiShift] = new components.Button({
+    //     midi: [0x90, 0x4B + midiShift],
+    //     inkey: this.Effects[midiShift].enableButtons[1].inKey,
+    //     outkey: this.Effects[midiShift].enableButtons[1].outKey,
+    //     on: AbletonPush.Colors.rGreen,
+    //     off: AbletonPush.Colors.rGreenDim,
+    // });
+    // this.RGBPads[0x4D + midiShift] = new components.Button({
+    //     midi: [0x90, 0x4C + midiShift],
+    //     on: AbletonPush.Colors.rGreen,
+    //     off: AbletonPush.Colors.rGreenDim,
+    // });
+    // this.RGBPads[0x4E + midiShift] = new components.Button({
+    //     midi: [0x90, 0x4D + midiShift],
+    //     on: AbletonPush.Colors.rGreen,
+    //     off: AbletonPush.Colors.rGreenDim,
+    // });
+    // this.RGBPads[0x4F + midiShift] = new components.Button({
+    //     midi: [0x90, 0x4E + midiShift],
+    //     on: AbletonPush.Colors.rGreen,
+    //     off: AbletonPush.Colors.rGreenDim,
+    // });
+
+
 
     // Pitchbend and tempo on row 7
     this.RGBPads[0x54 + midiShift]  = new components.Component({
@@ -1920,6 +1946,7 @@ AbletonPush.samplersDeck.prototype = new components.ComponentContainer();
  * @param {Number} iSubBloc Push text only to one half of the block (1 or 2)
  */
 AbletonPush.displayText = function(iLine, iBloc, Text, iSubBloc) {
+    if (!AbletonPush.ShowText) return;
     // Test line 1 to 4
     if (isNaN(iLine) || iLine < 1 || iLine > 4) {
         iLine = 1;
@@ -1989,6 +2016,7 @@ AbletonPush.displayText = function(iLine, iBloc, Text, iSubBloc) {
  */
 //AbletonPush.displayCursor = function(hbloc, value, min, max, mid, oc) {
 AbletonPush.displayCursor = function(options) {
+    if (!AbletonPush.ShowCursors) return;
     // Set defaults
     this.min = 0;
     this.max = 1;
