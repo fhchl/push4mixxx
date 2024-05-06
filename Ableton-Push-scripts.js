@@ -1052,7 +1052,7 @@ AbletonPush.fullDeck = function(deckNumbers, midiShift) {
     });
     this.RGBPads[0x27 + midiShift] = new components.Button({
         midi: [0x90, 0x27 + midiShift],
-        key: "sync_master",
+        key: "sync_leader",
         on: AbletonPush.Colors.rOrange,
         off: AbletonPush.Colors.rOrangeDim,
     });
