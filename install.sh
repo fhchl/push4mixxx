@@ -1,8 +1,8 @@
 #!/bin/bash
 
-DIR=$HOME/.mixxx/controllers/
+DIR=$(realpath $HOME/.mixxx/controllers/)
 mkdir -p $DIR
-ln -s Ableton-Push.midi.xml $DIR/Ableton-Push.midi.xml
-ln -s Ableton-Push-scripts.js $DIR/Ableton-Push-scripts.js
+ln -sf "$(realpath Ableton-Push.midi.xml)" "$DIR/Ableton-Push.midi.xml"
+ln -sf "$(realpath Ableton-Push-scripts.js)" "$DIR/Ableton-Push-scripts.js"
 echo "Files linked into '$DIR'"
 
