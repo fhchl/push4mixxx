@@ -637,6 +637,7 @@ AbletonPush.commonControls = function() {
     this.KnobsTouch = [];
 
     // Left column of buttons
+    // TODO: could make this into [Library], GoToItem
     this.Buttons[0x03] = new components.Button({
         midi: [0xB0, 0x03],
         group: "[AutoDJ]",
@@ -744,8 +745,8 @@ AbletonPush.commonControls = function() {
     // Touching library key maximizes library view
     this.KnobsTouch[0x0A] = new components.Encoder({
         midi: [0x90, 0x0A],
-        group: '[Master]',
-        key: 'maximize_library',
+        group: '[Skin]',
+        key: 'show_maximized_library',
         input: function (channel, control, value, status, group) {
             if (value === 0) {
                 this.inSetParameter(0);
